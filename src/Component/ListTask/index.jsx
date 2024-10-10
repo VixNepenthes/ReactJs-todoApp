@@ -1,8 +1,10 @@
-import { List, ListItem, VStack } from '@chakra-ui/react';
+import { List, ListItem } from '@chakra-ui/react';
 import React from 'react';
 import Task from '../Task';
+import { useSelector } from 'react-redux';
 
 const ListTask = () => {
+	const filteredList = useSelector((state) => state.task.filteredTaskList);
 	return (
 		<List
 			w='100%'
@@ -12,12 +14,11 @@ const ListTask = () => {
 			display='flex'
 			flexDirection='column'
 		>
-			<ListItem>
-				<Task
-					task={{ name: 'Hello World' }}
-					undone={true}
-				/>
-			</ListItem>
+			{filteredList.map((task) => (
+				<ListItem key={task._id}>
+					<Task task={task} />
+				</ListItem>
+			))}
 		</List>
 	);
 };

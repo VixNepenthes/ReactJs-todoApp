@@ -1,8 +1,15 @@
 import { HStack, Radio, RadioGroup, Text } from '@chakra-ui/react';
 import React from 'react';
 import { FILTER_STATUS } from '../../ultis/constant';
+import { useDispatch, useSelector } from 'react-redux';
+import { filterTasks } from '../../redux/actions/taskAction';
 
 const Filter = () => {
+	const dispatch = useDispatch();
+	const filterStatus = useSelector((state) => state.task.filter);
+	function handleFilterChange(filterStatus) {
+		dispatch(filterTasks(filterStatus));
+	}
 	return (
 		<HStack
 			className='filter__container'
@@ -18,7 +25,8 @@ const Filter = () => {
 				alignItems='center'
 				gap={6}
 				className='filter__radio-group'
-				defaultValue={FILTER_STATUS.ALL}
+				value={filterStatus}
+				onChange={handleFilterChange}
 			>
 				<Radio
 					className='radio-group__radio-item'

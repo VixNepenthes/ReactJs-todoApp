@@ -1,15 +1,13 @@
-import { Box, Button, HStack, IconButton, Image, Text, VStack } from '@chakra-ui/react';
+import { Box, Button, Flex, HStack, IconButton, Image, Text, VStack } from '@chakra-ui/react';
 import React from 'react';
 import { IoIosLogOut } from 'react-icons/io';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { userLogout } from '../../redux/actions/userActions';
-import { replace, useNavigate } from 'react-router-dom';
-import authorizedAxiosInstance from '../../ultis/authorizedAxios';
-import { API_ROOT } from '../../ultis/constant';
 import { logoutUserAPI } from '../../APIs';
 import { toast } from 'react-toastify';
-const Header = ({ imageUser, userName }) => {
+const Header = () => {
 	const dispatch = useDispatch();
+	const currentUser = useSelector((state) => state.user.currentUser);
 	async function handleLogOut() {
 		await logoutUserAPI();
 		toast.success('Goodbye');
@@ -19,36 +17,32 @@ const Header = ({ imageUser, userName }) => {
 		<HStack
 			className='header__container'
 			justify='space-between'
+			alignItems='center'
 			w='100%'
 		>
 			<VStack className='header__left-container'>
 				<HStack className='user__container'>
-					<Image
-						borderRadius='full'
-						boxSize='21px'
-						className='user__avatar'
-						src={imageUser}
-					/>
+					<Text
+						alignSelf='flex-start'
+						size={30}
+						fontWeight='700'
+					>
+						Welcome,
+					</Text>
 					<Text
 						as='b'
 						fontWeight='600'
 						className='user__name'
 						size={18}
 					>
-						{userName}
+						{currentUser.fullname}
 					</Text>
 				</HStack>
-				<Text
-					alignSelf='flex-start'
-					size={30}
-					fontWeight='700'
-				>
-					Welcome
-				</Text>
 			</VStack>
-			<Box
+			<Flex
 				className='header__right-container'
-				alignSelf='flex-start'
+				justify='center'
+				align='center'
 			>
 				<IconButton
 					_hover={{ backgroundColor: 'gray.600' }}
@@ -60,7 +54,7 @@ const Header = ({ imageUser, userName }) => {
 					color='white'
 					onClick={handleLogOut}
 				/>
-			</Box>
+			</Flex>
 		</HStack>
 	);
 };

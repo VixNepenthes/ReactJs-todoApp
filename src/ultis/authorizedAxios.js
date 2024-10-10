@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { logoutUserAPI } from '../APIs';
+import { logoutUserAPI, refreshTokenAPI } from '../APIs';
 import store from '../redux/store';
 import { userLogout } from '../redux/actions/userActions';
 let authorizedAxiosInstance = axios.create();
@@ -25,6 +25,15 @@ authorizedAxiosInstance.interceptors.request.use(
 		return Promise.reject(error);
 	}
 );
+/**
+ * Khởi tạo một cái promise cho việc gọi api refresh_token
+ * Mục đích tạo ra promise này để nhận yêu cầu refreshToken
+ * đầu tiên thì hold lại xử lý xong api refresh_token thì mới
+ * retry lại tránh lặp lại nhiều lần
+ * */
+
+let refreshTokenPromise = null;
+
 // response interceptor: Can thiệp vào giữa những response API
 authorizedAxiosInstance.interceptors.response.use(
 	function (response) {
@@ -34,10 +43,37 @@ authorizedAxiosInstance.interceptors.response.use(
 	function (error) {
 		if (error.response?.status === 401) {
 			logoutUserAPI().then(() => {
-				location.href = '/login';
+				toast.error(error.response?.message);
 				store.dispatch(userLogout());
 			});
-			toast.error(error.response?.data?.message || error?.message);
+			return Promise.reject(error);
+		}
+		const originalRequest = error.config;
+		const remembermeStatus = store.getState().user.remembermeStatus;
+		console.log(remembermeStatus);
+		if (error.response?.status === 410 && originalRequest) {
+			if (!remembermeStatus) {
+				logoutUserAPI().then(() => {
+					store.dispatch(userLogout());
+				});
+				return Promise.reject(error);
+			}
+			if (!refreshTokenPromise) {
+				refreshTokenPromise = refreshTokenAPI()
+					.then((response) => {})
+					.catch((_error) => {
+						logoutUserAPI().then(() => {
+							store.dispatch(userLogout());
+						});
+						return Promise.reject(_error);
+					})
+					.finally(() => {
+						refreshTokenPromise = null;
+					});
+			}
+			return refreshTokenPromise.then(() => {
+				return authorizedAxiosInstance(originalRequest);
+			});
 		}
 
 		// status code out of 200-299 in here

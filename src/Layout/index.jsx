@@ -5,11 +5,9 @@ import { Outlet } from 'react-router-dom';
 const Layout = () => {
 	return (
 		<Box
-			position='relative'
 			h='100vh'
 			w='100vw'
-			p={4}
-			bgColor='#319795'
+			bgGradient='linear-gradient(to-b, #7BCBD4 0%, #29C6B7 100%)'
 		>
 			<Outlet />
 			<ColorModeSwitcher

@@ -1,11 +1,20 @@
-import { Button, HStack, Input, FormControl, FormLabel, FormErrorMessage } from '@chakra-ui/react';
+import { Button, HStack, Input } from '@chakra-ui/react';
 import { CgAddR } from 'react-icons/cg';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTaskAPI } from '../../APIs';
+import { fetchTasks, filterTasks } from '../../redux/actions/taskAction';
 const AddNewTask = () => {
+	const currentUser = useSelector((state) => state.user.currentUser);
+	const isLoading = useSelector((state) => state.task.loading);
+	const dispatch = useDispatch();
 	const [taskName, setTaskName] = useState('');
-	function handleAddTask() {
-		toast.success(taskName.trim());
+	async function handleAddTask() {
+		const result = await addTaskAPI(currentUser.id, taskName.trim());
+		toast.success(result.message);
+		dispatch(fetchTasks());
+		setTaskName('');
 	}
 	function handleClear() {
 		setTaskName('');
@@ -46,6 +55,7 @@ const AddNewTask = () => {
 						colorScheme='teal'
 						className='add-new-task__button'
 						onClick={handleAddTask}
+						isLoading={isLoading}
 					>
 						Add new
 					</Button>

@@ -1,21 +1,46 @@
 import { Button, Card, Checkbox, HStack, Input, Text } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import { useState } from 'react';
+import { checkDoneTaskAPI, deleteTaskAPI, editTaskNameAPI } from '../../APIs';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { fetchTasks } from '../../redux/actions/taskAction';
+import { HttpStatusCode } from 'axios';
 
-const Task = ({ task, undone = true }) => {
-	const [taskName, setTaskName] = React.useState(task.name);
-	const [checkDone, setCheckDone] = React.useState(false);
-	const [isEditing, setIsEditing] = React.useState(false);
-	useEffect(() => {
-		if (!undone) {
-			setCheckDone(true);
+const Task = ({ task }) => {
+	const [taskName, setTaskName] = useState(task.name);
+	const [isEditing, setIsEditing] = useState(false);
+	const [isLoadingEdit, setIsLoadingEdit] = useState(false);
+	const [isLoadingDelete, setIsLoadingDelete] = useState(false);
+
+	const dispatch = useDispatch();
+
+	async function handleEdit(taskId) {
+		setIsLoadingEdit(true);
+		const result = await editTaskNameAPI(taskId, taskName);
+		if (result.status === HttpStatusCode.NoContent) {
+			toast.success('Edit success');
 		}
-	}, []);
-	function handleEdit(taskId) {
-		console.log('Edit', taskId);
+		dispatch(fetchTasks());
 		setIsEditing(!isEditing);
+		setIsLoadingEdit(false);
 	}
-	function handleDelete(taskId) {
-		console.log('Delete', taskId);
+
+	async function handleDelete(taskId) {
+		setIsLoadingDelete(true);
+		const result = await deleteTaskAPI(taskId);
+		if (result.status === HttpStatusCode.NoContent) {
+			toast.success('Delete success');
+		}
+		setIsLoadingDelete(false);
+		dispatch(fetchTasks());
+	}
+
+	async function handleCheckDone(taskId) {
+		const result = await checkDoneTaskAPI(taskId);
+		if (result.status === HttpStatusCode.NoContent) {
+			toast.success('Check Done success');
+		}
+		dispatch(fetchTasks());
 	}
 
 	return (
@@ -34,8 +59,8 @@ const Task = ({ task, undone = true }) => {
 			<HStack className='task__left-container'>
 				<Checkbox
 					colorScheme='teal'
-					isChecked={checkDone}
-					onChange={(e) => setCheckDone(e.target.checked)}
+					isChecked={task.completed}
+					onChange={() => handleCheckDone(task._id)}
 					className='task__checkbox'
 				/>
 				{isEditing ? (
@@ -46,7 +71,7 @@ const Task = ({ task, undone = true }) => {
 				) : (
 					<Text
 						colorScheme='black'
-						as={checkDone ? 'del' : 'p'}
+						as={task.completed ? 'del' : 'p'}
 						fontSize='16px'
 					>
 						{taskName}
@@ -64,9 +89,10 @@ const Task = ({ task, undone = true }) => {
 						p='12px'
 						colorScheme='teal'
 						variant='outline'
-						onClick={() => handleEdit(task.id)}
+						onClick={() => handleEdit(task._id)}
 						className='task__edit-button'
 						isDisabled={checkDone ? true : false}
+						isLoading={isLoadingEdit}
 					>
 						Save
 					</Button>
@@ -95,7 +121,7 @@ const Task = ({ task, undone = true }) => {
 						variant='outline'
 						onClick={() => setIsEditing(!isEditing)}
 						className='task__edit-button'
-						isDisabled={checkDone ? true : false}
+						isDisabled={task.completed ? true : false}
 					>
 						Edit
 					</Button>
@@ -104,9 +130,10 @@ const Task = ({ task, undone = true }) => {
 						p='12px'
 						colorScheme='red'
 						variant='outline'
-						onClick={() => handleDelete(task.id)}
+						onClick={() => handleDelete(task._id)}
 						className='task__delete-button'
-						isDisabled={checkDone ? true : false}
+						isDisabled={task.completed ? true : false}
+						isLoading={isLoadingDelete}
 					>
 						Delete
 					</Button>
