@@ -91,7 +91,6 @@ const Task = ({ task }) => {
 						variant='outline'
 						onClick={() => handleEdit(task._id)}
 						className='task__edit-button'
-						isDisabled={checkDone ? true : false}
 						isLoading={isLoadingEdit}
 					>
 						Save
@@ -103,7 +102,6 @@ const Task = ({ task }) => {
 						variant='outline'
 						onClick={() => setIsEditing(!isEditing)}
 						className='task__delete-button'
-						isDisabled={checkDone ? true : false}
 					>
 						Cancel
 					</Button>
@@ -132,7 +130,6 @@ const Task = ({ task }) => {
 						variant='outline'
 						onClick={() => handleDelete(task._id)}
 						className='task__delete-button'
-						isDisabled={task.completed ? true : false}
 						isLoading={isLoadingDelete}
 					>
 						Delete

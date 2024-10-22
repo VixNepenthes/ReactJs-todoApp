@@ -1,4 +1,3 @@
-import { filter } from '@chakra-ui/react';
 import {
 	FETCH_TASKS_FAILURE,
 	FETCH_TASKS_REQUEST,

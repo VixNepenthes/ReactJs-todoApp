@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { userLogin } from '../../redux/actions/userActions';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import { loginUserAPI } from '../../APIs';
+import { registerUserAPI } from '../../APIs';
 import { HiOutlineMail } from 'react-icons/hi';
 import {
 	Heading,
@@ -48,16 +48,16 @@ const Register = () => {
 		}
 		const checkVarUser = {
 			email: data.email,
+			fullname: data.fullname,
 			password: data.password,
 		};
 		let response = null;
 		try {
-			response = await loginUserAPI(checkVarUser);
+			response = await registerUserAPI(checkVarUser);
 			if (response.status >= 200 && response.status <= 299) {
 				console.log(response.data);
-				toast.success('Login successful');
-				dispatch(userLogin(checkVarUser));
-				navigate('/', { replace: true });
+				toast.success('Register successful');
+				navigate('/login', { replace: true });
 				return;
 			}
 		} catch (error) {

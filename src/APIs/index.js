@@ -1,5 +1,11 @@
 import authorizedAxiosInstance from '../ultis/authorizedAxios';
 import { API_ROOT } from '../ultis/constant';
+
+export const registerUserAPI = async (user) => {
+	const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/register`, user);
+	return response;
+};
+
 export const loginUserAPI = async (user) => {
 	const response = await authorizedAxiosInstance.post(`${API_ROOT}/v1/users/login`, user);
 	return response;

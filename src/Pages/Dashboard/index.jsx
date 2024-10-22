@@ -48,7 +48,7 @@ const Dashboard = () => {
 					display='flex'
 					justifyContent='center'
 					alignItems='center'
-					w='67%'
+					w={{ base: '95%', md: '75%', xl: '67%' }}
 					h='85.3%'
 				>
 					<Center
@@ -57,7 +57,7 @@ const Dashboard = () => {
 						w='100%'
 						backgroundColor='white'
 						borderRadius='20px'
-						padding='40px 60px'
+						padding={{ base: '14px 18px', xl: '40px 60px' }}
 					>
 						<VStack
 							w='100%'

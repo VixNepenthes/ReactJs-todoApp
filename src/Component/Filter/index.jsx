@@ -16,7 +16,6 @@ const Filter = () => {
 			justify='center'
 			align='center'
 			gap={6}
-			w='100%'
 		>
 			<Text>Filter: </Text>
 			<RadioGroup
